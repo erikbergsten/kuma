@@ -303,3 +303,13 @@ returns: formatted image string
 {{- $imageTag := ($tag | default $root.Values.kubectl.image.tag) -}}
 {{- printf "%s/%s:%s" $registry $repo $imageTag -}}
 {{- end -}}
+
+{{- define "kuma.cniArgs" -}}
+{{- if .Values.cni.args -}}
+{{- range .Values.cni.args }}
+- {{ . | quote -}}
+{{- end }}
+{{- else -}}
+- "sleep {{.Values.cni.delayStartupSeconds}} && exec /install-cni"
+{{- end }}
+{{- end -}}
