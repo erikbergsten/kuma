@@ -62,7 +62,14 @@ spec:
                 - cat
                 - /tmp/ready
           command: [ "/bin/sh", "-c", "--" ]
+          {{- if .Values.cni.args }}
+          args:
+          {{- range .Values.cni.args }}
+          - {{- . | quote | nindent 12 }}
+          {{- end }}
+          {{- else }}
           args: [ "sleep {{.Values.cni.delayStartupSeconds}} && exec /install-cni" ]
+          {{- end }}
           {{- else if .Values.experimental.ebpf.enabled }}
           {{- with .Values.cni.experimental.imageEbpf }}
           image: {{ printf "%s/%s:%s" .registry .repository .tag | quote }}
@@ -87,7 +94,14 @@ spec:
           image: {{ include "kuma.formatImage" (dict "image" .Values.cni.image "root" $) | quote }}
           imagePullPolicy: {{ .Values.cni.image.imagePullPolicy }}
           command: [ "/bin/sh", "-c", "--" ]
-          args: [ "sleep {{.Values.cni.delayStartupSeconds}} && exec /install-cni.sh" ]
+          {{- if .Values.cni.args }}
+          args:
+          {{- range .Values.cni.args }}
+          - {{ . | quote -}}
+          {{- end }}
+          {{- else }}
+          args: [ "sleep {{.Values.cni.delayStartupSeconds}} && exec /install-cni" ]
+          {{- end }}
           {{- end }}
           {{- if .Values.experimental.ebpf.enabled }}
           securityContext:

@@ -42,6 +42,10 @@ spec:
         {{- end }}
       labels: {{ include "kuma.cpLabels" . | nindent 8 }}
     spec:
+      {{- if .Values.controlPlane.tolerations }}
+      tolerations:
+        {{- .Values.controlPlane.tolerations | toYaml | nindent 10 -}}
+      {{- end }}
       {{- with .Values.controlPlane.affinity }}
       affinity: {{ tpl (toYaml . | nindent 8) $ }}
       {{- end }}
